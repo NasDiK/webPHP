@@ -11,8 +11,17 @@
     }
 
     public function insertBook($book) {
+      return $this
+        ->connect
+        ->exec("INSERT INTO books (\"title\", \"authorName\") VALUES ('$book->title', '$book->authorName') RETURNING *");
+    }
 
-      return $this->connect->exec("INSERT INTO books (\"title\", \"authorName\") VALUES ('$book->title', '$book->authorName')");
+    public function deleteBookById($bookId) {
+      return $this->connect->exec("DELETE FROM books WHERE id=$bookId");
+    }
+
+    public function updateBook($bookId, $params) {
+      return $this->connect->exec("UPDATE books SET \"authorName\"='$params->authorName', title='$params->title' WHERE id=$bookId");
     }
   }
 ?>

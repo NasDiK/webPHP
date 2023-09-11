@@ -5,9 +5,23 @@
     renderNavigation(false);
     
     $api = new ServicesApi();
+?>
 
-    require_once 'C:\ospanel\domains\laba11.com\pages\library\requestHandlers.php';
-  ?>
+<?php
+  $updateBook = (object)[];
+
+  if (isset($_GET['id'])) {
+    $updateBook->id = $_GET['id'];
+  }
+
+  if (isset($_GET['authorName'])) {
+    $updateBook->authorName = $_GET['authorName'];
+  }
+
+  if (isset($_GET['title'])) {
+    $updateBook->title = $_GET['title'];
+  }
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -33,10 +47,41 @@
     <div>
       <h2>Добавить книгу</h2>
 
-      <form method="post">
+      <form method="post" action="./handlers/create.php">
         <input type="text" placeholder="Название" name="titleAdd" />
         <input type="text" placeholder="Автор" name="authorNameAdd" />
         <input type="submit" value="Создать книгу" name="submit" />
+      </form>
+    </div>
+    <div>
+      <h2>Изменить книгу</h2>
+
+      <form method="post" action="./handlers/update.php">
+        <input 
+          type="text" 
+          placeholder="Название" 
+          name="title" 
+          value="<?php echo isset($updateBook->title) ? $updateBook->title : "" ?>"          
+          <?php echo isset($updateBook->id) ? null : "disabled" ?>
+        />
+        <input 
+          type="text" 
+          placeholder="Автор" 
+          name="authorName"
+          value="<?php echo isset($updateBook->authorName) ? $updateBook->authorName : "" ?>"          
+          <?php echo isset($updateBook->id) ? null : "disabled" ?>
+        />
+        <input 
+          type="text" 
+          name="id"
+          value="<?php echo "$updateBook->id" ?>"          
+          hidden
+        />
+        <input 
+          type="submit" 
+          value="Редактировать" 
+          <?php echo isset($updateBook->id) ? null : "disabled" ?>
+        />
       </form>
     </div>
   </body>
