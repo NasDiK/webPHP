@@ -9,5 +9,17 @@ $api = new ServicesApi();
     die();
   }
 
-  // echo "<script>console.log($result)</script>";
+  if (isset($_POST['idClient'])) {
+    $api->library()->deleteClientById($_POST['idClient']);
+
+    header("Location: http://laba11.com/pages/library/");
+    die();
+  }
+
+  if (isset($_POST['idBookIssue'])) {
+    $api->library()->deleteBookIssueById($_POST['idBookIssue']);
+
+    header("Location: http://laba11.com/pages/library/");
+    die();
+  }
 ?>

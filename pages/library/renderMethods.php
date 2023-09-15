@@ -21,4 +21,50 @@
     </div>  
 <?php
 }
+
+  function renderClientCard($el) {
+?>
+  <div>
+    <span>Id: <?echo $el->id?>.&nbsp;</span>
+    <span>Фамилия: <?echo $el->surname?>.&nbsp;</span>
+    <div style="display: flex; gap: 8px;">
+        <form method="get" action="./index.php">
+          <input type="text" value="<?echo $el->id?>" hidden name="idClient" />
+          <input type="text" value="<?echo $el->surname?>" hidden name="surnameClient" />
+          <input type="submit" value="Изменить" />
+        </form>
+        <form method="post" action="./handlers/delete.php">
+          <input type="text" value="<?echo $el->id?>" hidden name="idClient" />
+          <input type="submit" value="Удалить" />
+        </form>
+      </div>
+  </div>
+<?
+}
+
+function renderBookIssueCard($el) {
+?>
+  <div>
+  <span>Id: <?echo $el->id?>.&nbsp;</span>
+    <span>Книга: <?echo $el->bookTitle?>.&nbsp;</span>
+    <span>Клиент: <?echo $el->clientSurname?>.&nbsp;</span>
+    <span>Дата выдачи: <?echo $el->dateOfIssue?>.&nbsp;</span>
+    <span>Срок выдачи: <?echo $el->dueToDate?>.&nbsp;</span>
+    <div style="display: flex; gap: 8px;">
+      <form method="get" action="./index.php">
+        <input type="text" value="<?echo $el->id?>" hidden name="idBookIssue" />
+        <input type="text" value="<?echo $el->bookId?>" hidden name="bookIdBookIssue" />
+        <input type="text" value="<?echo $el->clientId?>" hidden name="clientIdBookIssue" />
+        <input type="text" value="<?echo $el->dateOfIssue?>" hidden name="dateOfIssueBookIssue" />
+        <input type="text" value="<?echo $el->dueToDate?>" hidden name="dueToDateBookIssue" />
+        <input type="submit" value="Изменить" />
+      </form>
+      <form method="post" action="./handlers/delete.php">
+        <input type="text" value="<?echo $el->id?>" hidden name="idBookIssue" />
+        <input type="submit" value="Удалить" />
+      </form>
+    </div>
+  </div>
+<?
+}
 ?>
