@@ -82,5 +82,9 @@
         WHERE id=$id
       ");
     }
+
+    public function getConnection(): PDO {
+      return $this->connect;
+    }
   }
 ?>
