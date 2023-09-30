@@ -181,8 +181,24 @@
       <div>
         <h2>Добавить выдачу</h2>
         <form method="post" action="./handlers/create.php">
-          <input type="number" placeholder="Id client" name="clientIdAddBookIssue" />
-          <input type="number" placeholder="Id book" name="bookIdAddBookIssue" />
+        <select
+            name="bookIdAddBookIssue"
+          >
+            <?
+              foreach ($books as $book) {
+                echo "<option value=\"$book->id\">$book->title</option>";
+              }
+            ?>
+          </select>
+          <select
+            name="clientIdAddBookIssue"
+          >
+          <?
+              foreach ($clients as $client) {
+                echo "<option value=\"$client->id\">$client->surname</option>";
+              }
+            ?>
+          </select>
           <input type="date" placeholder="IssueDate" name="dateOfIssueAddBookIssue" />
           <input type="date" placeholder="DueToDate" name="dueToDateAddBookIssue" />
           <input type="submit" value="Создать клиента" name="submit" />
@@ -192,20 +208,28 @@
         <h2>Изменить выдачу</h2>
 
         <form method="post" action="./handlers/update.php">
-          <input 
-            type="number" 
-            placeholder="Книга Id" 
-            name="bookIdBookIssue" 
+          <select
+            name="bookIdBookIssue"
             <?php echo isset($updateBookIssue->bookId) ? "value=\"$updateBookIssue->bookId\"" : "" ?>         
             <?php echo isset($updateBookIssue->id) ? null : "disabled" ?>
-          />
-          <input 
-            type="number" 
-            placeholder="Клиент Id" 
-            name="clientIdBookIssue" 
+          >
+            <?
+              foreach ($books as $book) {
+                echo "<option value=\"$book->id\">$book->title</option>";
+              }
+            ?>
+          </select>
+          <select
+            name="clientIdBookIssue"
             <?php echo isset($updateBookIssue->clientId) ? "value=\"$updateBookIssue->clientId\"" : "" ?>         
             <?php echo isset($updateBookIssue->id) ? null : "disabled" ?>
-          />
+          >
+          <?
+              foreach ($clients as $client) {
+                echo "<option value=\"$client->id\">$client->surname</option>";
+              }
+            ?>
+          </select>
           <input 
             type="date" 
             placeholder="IssueDate" 

@@ -1,9 +1,30 @@
 <?php
-    require_once 'C:\ospanel\domains\laba11.com\utils\services\index.php';
+    require_once '..\..\utils\services\index.php';
     require_once 'C:\ospanel\domains\laba11.com\utils\renderNavigation.php';
     
     renderNavigation(false);
-    
+
+    $api = new ServicesApi();
+
+    $books = $api->library()->getAllBooks(); 
+
+    //DEFAULT_VALUES
+    $queryParams = (object)[];
+    $queryParams->authorsQueryOne = ['Пушкин А. С.']; 
+    $queryParams->countQuerySeven = null;
+
+    if (isset($_POST['authorsQueryOne'])) {
+      $queryParams->authorsQueryOne = $_POST['authorsQueryOne'];
+    }
+
+    if (isset($_POST['countQueryFour'])) {
+      $queryParams->countQueryFour = $_POST['countQueryFour'];
+    }
+
+    if (isset($_POST['countQuerySeven'])) {
+      $queryParams->countQuerySeven = $_POST['countQuerySeven'];
+    }
+
     function renderQueryCard(string $query, int $index, string $task) {
 ?>
   <div style="margin-top: 30px;">
@@ -44,11 +65,31 @@
 <?
     }
 
+    $authors = join(",", array_map(function($authorName) {
+      return "'$authorName'";
+      }, $queryParams->authorsQueryOne)
+    );
+
     renderQueryCard(
-      'SELECT * FROM books where "authorName" in (\'Пушкин А. С.\') ORDER BY "authorName" DESC, "title" ASC',
+      "SELECT * FROM books where \"authorName\" in ($authors) ORDER BY \"authorName\" DESC, \"title\" ASC",
       1,
       "Список книг заданных авторов, упорядоченный по убыванию по авторам или по возрастанию по названиям;"
     );
+?>
+    <form method="POST" action="./index.php">
+      <select
+        multiple
+        name="authorsQueryOne[]"
+      >
+        <?
+          foreach($books as $book) {
+            echo "<option value=\"$book->authorName\">$book->authorName</option>";
+          }
+        ?>
+      </select>
+      <input type="submit" />
+    </form>
+<?
 
     renderQueryCard(
       'SELECT * FROM clients WHERE surname ilike \'%ов\'',
@@ -63,7 +104,9 @@
     );
 
     renderQueryCard(
-      'SELECT "clientId" as "CLIENT", COUNT("clientId") from "booksIssues" GROUP BY ("clientId")',
+      'SELECT "clientId" as "clientId", "clients"."surname", COUNT("clientId") from "booksIssues"
+      INNER JOIN "clients" ON "booksIssues"."clientId" = "clients"."id"
+      GROUP BY ("clientId", "clients"."surname")',
       4,
       "Список клиентов, которым выдавались книги с указанием количества выдач;"
     );
@@ -88,16 +131,36 @@
       "6.	Список клиентов, бравших книги более 5 раз;"
     );
 
+    $query7Text = 'SELECT "clients".*, COALESCE("counts"."count", 0) as count from "clients"
+    LEFT JOIN (
+         SELECT "clientId", count("clientId") as count
+            FROM "booksIssues"
+            GROUP BY ("clientId")
+    ) as "counts" ON "counts"."clientId" = "clients"."id"';
+
+    if (isset($queryParams->countQuerySeven) && is_numeric($queryParams->countQuerySeven)) {
+      $query7Text = $query7Text . "WHERE count = $queryParams->countQuerySeven";
+    }
+
     renderQueryCard(
-      'SELECT "clients".*, COALESCE("counts"."count", 0) as count from "clients"
-      LEFT JOIN (
-           SELECT "clientId", count("clientId") as count
-              FROM "booksIssues"
-              GROUP BY ("clientId")
-      ) as "counts" ON "counts"."clientId" = "clients"."id"',
+      $query7Text,
       7,
       "Список клиентов с полем, содержащим количество выдач книг данному клиенту."
     );
+
+
+?>
+      <form method="POST" action="./index.php">
+      <input
+        style="width=100%;"
+        type="text"
+        name="countQuerySeven"
+        placeholder="Если необходимо, укажите количество книг"
+      />
+      <input type="submit" />
+    </form>
+
+<?
 
     renderQueryCard(
       'SELECT "books".*, COALESCE("counts"."count", 0) as count, "counts"."avg" as avg from "books"
@@ -113,10 +176,11 @@
     );
 
     renderQueryCard(
-      'SELECT * FROM clients
+      'SELECT "clients"."id", "clients"."surname", "counts"."count", "counts"."bookId", "books"."title", "books"."authorName" FROM clients
       INNER JOIN (
-      SELECT DISTINCT("clientId"), Count("bookId") FROM "booksIssues" GROUP BY ("bookId", "clientId")
+      SELECT DISTINCT("clientId"), Count("bookId"), "bookId" FROM "booksIssues" GROUP BY ("bookId", "clientId")
      )  as counts ON "counts"."clientId" = "clients"."id"
+     INNER JOIN "books" ON "counts"."bookId" = "books"."id"
      WHERE count > 1',
       9,
       "Список клиентов, бравших одну и ту же книгу более 1 раза. В списке отобразить название книги и сколько раз она бралась."
