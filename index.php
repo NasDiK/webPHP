@@ -1,5 +1,5 @@
 <?php
-  require_once 'C:\ospanel\domains\laba11.com\utils\renderNavigation.php';
+  require_once '.\utils\renderNavigation.php';
 
   renderNavigation();
 ?>
