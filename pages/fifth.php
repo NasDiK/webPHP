@@ -1,16 +1,21 @@
 <?php
   require_once '..\utils\logger.php';
   require_once '..\consts.php';
+  require_once __DIR__ . '/commonMethods.php';
 
   $logger = new Logger();
 
-  $logger->info(
-    $logTypes['OPEN_PAGE'] . ' | ' . 'FIFTH'
-  );
+  if (isset($_GET['ORDER']) && isset($_GET['from_banner'])) {
+    order('FIFTH', $logger, $logTypes['ORDER']);
+  } else {
+    $logger->info(
+      $logTypes['OPEN_PAGE'] . ' | ' . 'FIFTH'
+    );
+  }
 ?>
 
-<form>
-  <input type='submit' value="Заказать" />
+<form action="./fifth.php" method="GET">
+  <input type='submit' value="Заказать" name="ORDER" />
 </form>
 
 <?

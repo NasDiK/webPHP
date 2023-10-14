@@ -19,11 +19,11 @@
   ];
   
   $pages = [
-    '1' => './pages/first.php',
-    '2' => './pages/second.php',
-    '3' => './pages/third.php',
-    '4' => './pages/fourth.php',
-    '5' => './pages/fifth.php'
+    '1' => './pages/first.php?from_banner=true',
+    '2' => './pages/second.php?from_banner=true',
+    '3' => './pages/third.php?from_banner=true',
+    '4' => './pages/fourth.php?from_banner=true',
+    '5' => './pages/fifth.php?from_banner=true'
   ];
 
   $bannerPath =  $banners[$randBannerNum];
@@ -31,7 +31,7 @@
 ?>
 
 <div style="display: flex; flex-direction: column; gap: 16px;">
-  <a href="/stats">Статистика</a>
+  <a href="/pages/stats.php">Статистика</a>
   <a href=<? echo $pagePath ?>>
     <img src=<? echo $bannerPath ?> alt="" />
   </a>
