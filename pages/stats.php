@@ -25,6 +25,14 @@
     "FIFTH" => 0
   ];
 
+  $sitesVisitsByBanner = [
+    "FIRST" => 0,
+    "SECOND" => 0,
+    "THIRD" => 0,
+    "FOURTH" => 0,
+    "FIFTH" => 0
+  ];
+
   $bannersShows = [
     "1" => 0,
     "2" => 0,
@@ -58,13 +66,17 @@
       case 'ORDER':
         $sitesOrders[$value] = $sitesOrders[$value] + 1;
         break;
+      case 'OPEN_PAGE_FROM_BANNER':
+        $sitesVisitsByBanner[$value] = $sitesVisitsByBanner[$value] + 1;
+        $sitesVisits[$value] = $sitesVisits[$value] + 1; // заинтересовавшийся же сайтов же ну?)
+        break;
     }
   }
 
-  $allVisitorsCount = array_sum($sitesVisits);
+  $allVisitorsCount = array_sum($sitesVisits); // заинтересовавшийся же сайтов же ну?)
 
   foreach($bannersShows as $key => $val) {
-    $ctr = $val === 0 ? 'Деление на ноль' : round($sitesVisits[$bilateralTranslate[$key]] / $val * 100, 2);
+    $ctr = $val === 0 ? 'Деление на ноль' : round($sitesVisitsByBanner[$bilateralTranslate[$key]] / $val * 100, 2);
     $cti = $allVisitorsCount === 0 ? 'Деление на ноль' : round($sitesVisits[$bilateralTranslate[$key]] / $allVisitorsCount, 2);
     $ctb = $sitesVisits[$bilateralTranslate[$key]] === 0 ? 'Деление на ноль' : round($sitesOrders[$bilateralTranslate[$key]] / $sitesVisits[$bilateralTranslate[$key]], 2); 
 

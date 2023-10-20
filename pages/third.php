@@ -5,12 +5,18 @@
 
   $logger = new Logger();
 
-  if (isset($_GET['ORDER']) && isset($_GET['from_banner'])) {
+  if (isset($_GET['ORDER'])) {
     order('THIRD', $logger, $logTypes['ORDER']);
   } else {
-    $logger->info(
-      $logTypes['OPEN_PAGE'] . ' | ' . 'THIRD'
-    );
+    if (isset($_GET['from_banner'])) {
+      $logger->info(
+        $logTypes['OPEN_PAGE_FROM_BANNER'] . ' | ' . 'THIRD'
+      );
+    } else {
+      $logger->info(
+        $logTypes['OPEN_PAGE'] . ' | ' . 'THIRD'
+      );
+    }
   }
 ?>
 
