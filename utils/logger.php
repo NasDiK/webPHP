@@ -4,7 +4,7 @@
     private $fileStream;
 
     function __construct() {
-      require_once 'C:\ospanel\domains\laba11.com\config.php';
+      require_once '../config.php';
 
       $this->fileStream = fopen($LOGGER_OUTPUT_FILENAME, 'a');
     }

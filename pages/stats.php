@@ -55,6 +55,7 @@
     //[2023-10-14 17:30:48] | INFO | BANNER_SHOW | 2 - пример лога
     $action = $parsedLines[2];
     $value = str_replace("\n", "", $parsedLines[3]); // из-за перевода на новую строку...
+    $value = str_replace(" ", "", $value); // из-за неожиданных пробелов в конце строки
 
     switch($action) {
       case 'BANNER_SHOW':
@@ -77,7 +78,7 @@
 
   foreach($bannersShows as $key => $val) {
     $ctr = $val === 0 ? 'Деление на ноль' : round($sitesVisitsByBanner[$bilateralTranslate[$key]] / $val * 100, 2);
-    $cti = $allVisitorsCount === 0 ? 'Деление на ноль' : round($sitesVisits[$bilateralTranslate[$key]] / $allVisitorsCount, 2);
+    $cti = $allVisitorsCount === 0 ? 'Деление на ноль' : round($sitesVisitsByBanner[$bilateralTranslate[$key]] / $allVisitorsCount, 2);
     $ctb = $sitesVisits[$bilateralTranslate[$key]] === 0 ? 'Деление на ноль' : round($sitesOrders[$bilateralTranslate[$key]] / $sitesVisits[$bilateralTranslate[$key]], 2); 
 
     echo "<div>
