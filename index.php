@@ -1,38 +1,51 @@
-<?php
-  require_once '.\utils\logger.php';
-  require_once './consts.php';
+<?
+  require_once './config.php';
 
-  $logger = new Logger();
+  $lines = file($PARSE_FILE_PATH);
 
-  $randBannerNum = rand(1, 5);
+  function validateRegex($string, $regex) {
+    return preg_match($regex, $string) > 0;
+  }
 
-  $logger->info(
-    $logTypes['BANNER_SHOW'] . ' | ' . $randBannerNum
-  );
+  function returnFirstMatch($string, $regex) {
+    $matches = [];
+    preg_match($regex, $string, $matches);
 
-  $banners = [
-    '1' => './assets/banners/01.gif',
-    '2' => './assets/banners/02.gif',
-    '3' => './assets/banners/03.gif',
-    '4' => './assets/banners/04.gif',
-    '5' => './assets/banners/05.gif'
-  ];
+    return count($matches) !== 0 ? $matches[0] : null;
+  }
   
-  $pages = [
-    '1' => './pages/first.php?from_banner=true',
-    '2' => './pages/second.php?from_banner=true',
-    '3' => './pages/third.php?from_banner=true',
-    '4' => './pages/fourth.php?from_banner=true',
-    '5' => './pages/fifth.php?from_banner=true'
-  ];
+  foreach($lines as $line) {
+    $args = explode(',', $line);
+    $argsLength = count($args);
 
-  $bannerPath =  $banners[$randBannerNum];
-  $pagePath =  $pages[$randBannerNum];
+    if ($argsLength === 0) {
+      continue;
+    }
+
+    /**
+     * Требования к парсу данных
+     * 1) Данные могут быть неполными (например 6 элементов в массиве)
+     * 2) Данные могут быть искорёжены (например кодировка), что сделать? Игнорировать
+     */
+
+    $recordIndex = validateRegex($args[0], '/^\d+$/') ? $args[0] : null; // Номер записи
+    $name = $argsLength >= 2 && validateRegex($args[1], '/^[A-Za-zА-Яа-я]+$/') ? $args[1] : null; // Имя
+    $patronymicInitial = $argsLength >= 3 && validateRegex($args[2], '/^[A-Za-zА-Яа-я]$/')? $args[2] . '.' : null; // Инициал отчества
+    $lastname = $argsLength >= 4 && validateRegex($args[3], '/^[A-Za-zА-Яа-я]+$/') ? $args[3] : null; // Фамилия
+    $sex = $argsLength >= 5 && validateRegex($args[4], '/^male$|^female$/') ? $args[4] === 'male' ? 'Муж' : 'Жен' : null; // Пол
+    $city = $argsLength >= 6 ? returnFirstMatch($args[5], '/([A-Za-zА-Яа-я]+\s?)+/') : null; //Город
+    $district = $argsLength >= 7 ? returnFirstMatch($args[6], '/^[A-Za-zА-Яа-я0-9]{2}$/') : null; // область
+    $emailAddress = $argsLength >= 8 ? $args[7] : null; // Адрес электронной почты
+    $phone = $argsLength >= 9 ? $args[8] : null; // Телефон
+    $dateOfBirth = $argsLength >= 10 ? $args[9] : null; // Дата рождения
+    $position = $argsLength >= 11 ? $args[10] : null; // Должность
+    $company = $argsLength >= 12 ? $args[11] : null; // Компания
+    $weight = $argsLength >= 13 ? $args[12] : null; // Вес
+    $height = $argsLength >= 14 ? $args[13] : null; // Рост
+    $mailAddress = $argsLength >= 15 ? $args[14] : null; // Почтовый адрес
+    $mailZIP = $argsLength >= 16 ? $args[15] : null; // Почтовый индекс
+    $contryCode = $argsLength >= 17 ? $args[16] : null; // Код страны
+
+    echo $recordIndex . '/' . $district; 
+  }
 ?>
-
-<div style="display: flex; flex-direction: column; gap: 16px;">
-  <a href="/pages/stats.php">Статистика</a>
-  <a href=<? echo $pagePath ?>>
-    <img src=<? echo $bannerPath ?> alt="" />
-  </a>
-</div>
