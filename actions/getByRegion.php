@@ -1,6 +1,6 @@
 <a href="http://laba11.com">На главную</a>
 <?
-  $labelsOnRussia = array(
+  $labelsOnRussia = [
     'recordIndex' => 'Индекс',
     'name' => 'Имя',
     'patronymicInitial' => 'Инициал отчества',
@@ -33,7 +33,7 @@
     'weightIsGreatherAvgCount' => 'Вес больше среднего (количество)',
     'weightIsAvgCount' => 'Вес равен среднему (количество)',
     'weightIsSmallerAvgCount' => 'Вес меньше среднего (количество)',
-  );
+  ];
   function getAgeByDateOfBirth($dateOfBirth, $currentDate) {
     if (isset($dateOfBirth)) {
       return $currentDate->diff(new DateTime($dateOfBirth))->y;
@@ -42,12 +42,7 @@
     return null;
   }
 
-  $shouldParse = false;
-  $region = isset($_GET['region']) && strlen($_GET['region']) ? $_GET['region'] : null;
-
-  if (!isset($region)) {
-    return;
-  }
+  $region = isset($_GET['region']) && strlen($_GET['region'] || '') ? $_GET['region'] : null;
 ?>
 
 <form method="GET" action="./getByRegion.php">
@@ -58,6 +53,10 @@
 </form>
 
 <?
+
+  if (!isset($region)) {
+    return;
+  }
 
   $content = file('../changedValues.txt');
 

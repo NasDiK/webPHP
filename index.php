@@ -1,4 +1,4 @@
-<a href="http://laba11.com/actions/getByRegion.php">Регионы</a>
+<a href="/actions/getByRegion.php">Регионы</a>
 
 <?
   require_once './config.php';
@@ -17,6 +17,10 @@
   }
 
   function formatPhone($data) {
+    if (!isset($data)) {
+      return null;
+    }
+
     $digits = str_split(
       preg_replace('/\D/', '', $data)
     );
@@ -254,7 +258,7 @@
       $age = getAgeByDateOfBirth($dateOfBirth, $currentDate);
     }
 
-    $newRecordIndex = str_pad($recordIndex, 6, '0', STR_PAD_LEFT);
+    $newRecordIndex = $recordIndex !== null ? str_pad($recordIndex, 6, '0', STR_PAD_LEFT) : null;
     $newPhone = formatPhone($phone);
     $newWeight = round(floatval($weight), 0, PHP_ROUND_HALF_UP);
 
@@ -355,8 +359,8 @@
       <? foreach($changedRows[0] as $key => $val) { echo "<th>$labelsOnRussia[$key] ($key)</th>"; } ?>
     </tr>
     <?
-      // foreach($changedRows as $rowIndex => $row) {
-      foreach([] as $rowIndex => $row) {
+      foreach($changedRows as $rowIndex => $row) { //!
+      // foreach([] as $rowIndex => $row) {
     ?>
       <tr>
         <?
