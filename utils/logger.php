@@ -3,10 +3,14 @@
 
     private $fileStream;
 
-    function __construct() {
-      require_once '../config.php';
+    function __construct($filepath) {
+      if (!isset($filepath)) {
+        require_once '../config.php';
+        $this->fileStream = fopen($LOGGER_OUTPUT_FILENAME, 'a');
+      } else {
+        $this->fileStream = fopen($filepath, 'a');
+      }
 
-      $this->fileStream = fopen($LOGGER_OUTPUT_FILENAME, 'a');
     }
 
     function __destruct() {
