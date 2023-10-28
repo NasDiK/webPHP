@@ -1,3 +1,5 @@
+<a href="http://laba11.com/actions/getByRegion.php">Регионы</a>
+
 <?
   require_once './config.php';
 
@@ -321,7 +323,7 @@
 <hr/>
 
 <!-- <h2>Таблица распаршенных значений: </h2>
-<div style="width: 100%; height: 500px; overflow: auto">
+<div style="width: 100%; max-height: 500px; overflow: auto">
   <table border="1">
     <tr>
       <? //foreach($labelsOnRussia as $key => $val) { echo "<th>$val ($key)</th>"; } ?>
@@ -347,10 +349,10 @@
 <hr/>
 
 <h2>Таблица преобразованных значений (п.2): </h2>
-<div style="width: 100%; height: 500px; overflow: auto">
+<div style="width: 100%; max-height: 500px; overflow: auto">
   <table border="1">
     <tr>
-      <? foreach($labelsOnRussia as $key => $val) { echo "<th>$val ($key)</th>"; } ?>
+      <? foreach($changedRows[0] as $key => $val) { echo "<th>$labelsOnRussia[$key] ($key)</th>"; } ?>
     </tr>
     <?
       // foreach($changedRows as $rowIndex => $row) {
