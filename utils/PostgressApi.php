@@ -15,15 +15,4 @@
       )
     );
   };
-
-  class PostgressApi {
-    //Может в перспективе тут и будет красиво, пока нет)
-    private $PDO_CONNECTION;
-
-    function __construct($PG_CONNECTION) {
-      if ($PG_CONNECTION == null) {
-        throw new ErrorException('коннекшн кривой, передалай по братски');
-      }
-    }
-  }
 ?>
