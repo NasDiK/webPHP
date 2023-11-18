@@ -57,19 +57,34 @@
 <input type="text" disabled id="rashod" />
 
 <script>
-  const rashod = document.getElementById('rashod');
-  const distance = document.getElementById('distance');
+  const rashodHTML = document.getElementById('rashod');
+  const distanceHTML = document.getElementById('distance');
   let loadedMarks, selectedMark;
 
-  const onChangeDistance = (value) => {
-    const selectedMarkRow = loadedMarks.find(({marka})=> marka === selectedMark);
+  const setSummaryRashod = (marka, distance) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          result = JSON.parse(this.responseText);
 
-    rashod.value = Number.parseFloat(selectedMarkRow['rashod']) / 100 * Number.parseFloat(value) + ' л./100 км'
+          rashodHTML.value = result + ' л./100км';
+        }
+      };
+    xhr.open("GET", `actions/calculateRashod.php?marka=${marka}&distance=${distance}`);
+    xhr.send();
+  }
+
+  const onChangeDistance = (value) => {
+    setSummaryRashod(selectedMark, value);
   }
 
   const onChangeMark = (value) => {
     selectedMark = value;
-    distance.disabled = false;
+    distanceHTML.disabled = false;
+
+    if (distanceHTML.value) {
+      setSummaryRashod(selectedMark, distanceHTML.value);
+    }
   }
 
   const onChangeVidTransporta = (value) => {
@@ -78,7 +93,8 @@
         if (this.readyState == 4 && this.status == 200) {
           const result = JSON.parse(this.responseText);
           loadedMarks = result;
-          
+          selectedMark = result[0].marka;
+
           document.getElementById("marka").innerHTML = result.reduce((acc, curV) => {
             return acc + `<option value="${curV['marka']}">${curV['marka']}</option>`;
           }, '');
