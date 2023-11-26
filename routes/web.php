@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\ResumeController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,14 +15,34 @@ use App\Http\Controllers\IndexController;
 |
 */
 
-Route::get('/', function () {
-    return view('test');
-});
+Route::get('/index', [
+    IndexController::class, 'index'
+])->name('index');
 
 Route::get('/resume', [
     IndexController::class, 'index'
+])->name('resume');
+
+Route::get('/resume/show/{id}', [
+    ResumeController::class, 'showPersonResume'
 ]);
 
-Route::get('/resume/show', [
-    IndexController::class, 'show'
+Route::get('/resume/add', [
+    ResumeController::class, 'showAddPersonPage'
+])->name('resumeAdd');
+
+Route::get('/resume/edit/{id}', [
+    ResumeController::class, 'showEditPersonPage'
+]);
+
+Route::post('/resume/add', [
+    ResumeController::class, 'addResume'
+]);
+
+Route::post('/resume/edit', [
+    ResumeController::class, 'updateResume'
+]);
+
+Route::post('/resume/delete/{id}', [
+    ResumeController::class, 'deleteResume'
 ]);

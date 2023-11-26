@@ -6,56 +6,40 @@
 </head>
 
 <body>
+    @extends('layout.master')
 
-    <div class="header"><!--*****************Логотип и шапка********************-->
-        Резюме и вакансии<div id="logo"></div>
-    </div>
+    @section('sidebar')
+    @parent
+    @stop
 
+    @section('content')
+        @parent
+
+    {{-- <div class="leftcol"><!--**************Основное содержание страницы************--> --}}
     <div class="leftcol"><!--**************Основное содержание страницы************-->
         <h1>Программист</h1>
 
-
-        <p class="pinline second">
-            Иванов Иван<br>
-            Телефон: 111111
-        </p>
-        <p class="pinline third">
-            Стаж:
-            10 лет
-        </p>
-
-        <p class="pinline second">
-            Петров Петр
-            <br>
-            Телефон: 2222222
-        </p>
-        <p class="pinline third">
-            Стаж:
-            7 лет
-        </p>
-
-        <p class="pinline second">
-            Калугин Алексей
-            <br>
-            Телефон: 333333
-        </p>
-        <p class="pinline third">
-            Стаж:
-            9 лет
-        </p>
-
+        @foreach($persons as $person)
+        <div>
+            <p class="pinline second">
+                {{$person->FIO}}<br>
+                Телефон: {{$person->Phone}}
+            </p>
+            <p class="pinline third">
+                Стаж:
+                {{$person->Stage}} лет
+            </p>
+            <form method="GET" action="{{ url("/resume/edit/$person->id") }}">
+                <input type="submit" value="Изменить"/>
+            </form>
+            <form method="POST" action="{{ url("/resume/delete/$person->id") }}">
+                @csrf
+                <input type="submit" value="Удалить"/>
+            </form>
+        </div>
+        @endforeach
     </div>
-
-    <div class="rightcol"><!--*******************Навигационное меню*******************-->
-        <ul class="menu">
-            <li><a href="">Вакансии</a></li>
-            <li><a href="">Резюме по профессиям</a></li>
-            <li><a href="">Резюме по возрасту</a></li>
-            <li><a href="">Избранное резюме</a></li>
-        </ul>
-    </div>
-    <div class="footer">&copy; Copyright 2017</div>
-
+    @stop
 </body>
 
 </html>

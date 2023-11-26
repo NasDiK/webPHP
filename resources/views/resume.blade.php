@@ -1,4 +1,3 @@
-
 <head>
   <link rel=stylesheet href="{{ asset('style.css') }}" type='text/css'>
   <title>Резюме и вакансии </title>
@@ -14,21 +13,21 @@
 
 
       <div class="pinline1">
-          <img class="pic" src="{{ asset('images/' . $data['avatar']) }}">
+          <img class="pic" src="{{ asset('images/' . $userData->Image)}}">
       </div>
 
       <p class="pinline second">
-          {{$data['lastName']}}
+          {{$userData->FIO}}
 
           <br>
-          Телефон: {{$data['phoneNumber']}}
+          Телефон: {{$userData->Phone}}
       </p>
 
       <p class="pinline third">
-          {{$data['position']}}
+          {{$userData->staff->staff}}
           <br>
 
-          Стаж: {{$data['experience']}}
+          Стаж: {{$userData->Stage}}
       </p>
   </div>
 

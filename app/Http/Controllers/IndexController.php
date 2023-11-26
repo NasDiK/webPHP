@@ -1,8 +1,8 @@
 <?
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
+use App\Models\Person;
 
 class IndexController extends Controller
 {
@@ -10,20 +10,10 @@ class IndexController extends Controller
   {
     $header = 'Резюме и вакансии';
     
-    return view('mainpage', ['header' => $header]);
-  }
-
-  public function show()
-  {
-    $data = [
-      'lastName' => 'Иванов',
-      'position' => 'Программист',
-      'phoneNumber' => '55-55-55',
-      'experience' => '4 года',
-      'avatar' => 'ava1.jpg'
-    ];
-
-    return view('resume', ['data' => $data]);
+    return view('mainpage', [
+      'header' => $header,
+      'persons' => Person::all()
+    ]);
   }
 }
 ?>
