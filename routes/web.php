@@ -39,7 +39,7 @@ Route::post('/resume/add', [
     ResumeController::class, 'addResume'
 ]);
 
-Route::post('/resume/edit', [
+Route::post('/resume/edit/{id}', [
     ResumeController::class, 'updateResume'
 ]);
 

@@ -6,6 +6,7 @@
 
 @php
   $personModel = isset($editPerson) ? [
+    'id' => $editPerson->id, 
     'FIO' => $editPerson->FIO, 
     'Phone' => $editPerson->Phone, 
     'Image' => $editPerson->Image, 
@@ -25,7 +26,7 @@
 
   {{$addResult}}
 
-  <form method="POST" action="{{ url('/resume/add') }}" class="formContent" enctype="multipart/form-data">
+  <form method="POST" action="{{ isset($editPerson) ? url('/resume/edit/'. $personModel['id']) : url('/resume/add') }}" class="formContent" enctype="multipart/form-data">
     @csrf
     <p>ФИО <input name="FIO" type="text" value="{{$personModel['FIO']}}">
     <p>Телефон <input name="Phone" value="{{$personModel['Phone']}}">

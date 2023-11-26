@@ -79,16 +79,26 @@ class ResumeController extends Controller
       'staffs' => Staff::all()
     ]);
   }
+  public function updateResume(int $id, Request $request) {
+    $person = Person::find($id);
+
+    $formData = $request->all();
+
+    $person->fill($formData);
+    $person->save();
+
+    return redirect("/resume/edit/$id")->with([
+      'addResult' => "Updated id #$person->id",
+      'staffs' => Staff::all(),
+      'editPerson' => $person
+    ]);
+  }
 
   public function deleteResume(int $id, Request $request) {
     $person = $this->getPersonInfoById($id);
     $person->delete();
 
     return Redirect::back();
-  }
-
-  public function updateResume(Request $request) {
-    // dd($data);
   }
 }
 ?>
