@@ -11,7 +11,6 @@ class Person extends Model
 	use HasFactory;
 	
 	public function staff(): HasOne {
-		// return $this->hasOne(Staff::class);
 		return $this->hasOne(Staff::class, 'id', 'Staff');
 	}
 	
