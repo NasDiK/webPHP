@@ -15,7 +15,7 @@ use App\Http\Controllers\ResumeController;
 |
 */
 
-Route::get('/index', [
+Route::get('/', [
     IndexController::class, 'index'
 ])->name('index');
 

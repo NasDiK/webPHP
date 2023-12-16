@@ -15,7 +15,6 @@
     @section('content')
         @parent
 
-    {{-- <div class="leftcol"><!--**************Основное содержание страницы************--> --}}
     <div class="leftcol"><!--**************Основное содержание страницы************-->
         <h1>Программист</h1>
 
@@ -35,6 +34,10 @@
             <form method="POST" action="{{ url("/resume/delete/$person->id") }}">
                 @csrf
                 <input type="submit" value="Удалить"/>
+            </form>
+            <form method="GET" action="{{ url("/resume/show/$person->id") }}">
+                @csrf
+                <input type="submit" value="Посмотреть"/>
             </form>
         </div>
         @endforeach
