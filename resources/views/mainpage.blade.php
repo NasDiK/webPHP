@@ -10,12 +10,18 @@
 
     @section('sidebar')
     @parent
+    <ul class="menu">
+        <li><a href="/resume/lab9/firstQuery">Первый запрос</a></li>
+        <li><a href="/resume/lab9/secondQuery">Второй запрос</a></li>
+        <li><a href="/resume/lab9/thirdQuery">Третий запрос</a></li>
+        <li><a href="/resume/lab9/fourthQuery">Четвертый запрос</a></li>
+        <li><a href="/resume/lab9/staffsList">Список профессий</a></li>
+    </ul>
     @stop
 
     @section('content')
         @parent
 
-    {{-- <div class="leftcol"><!--**************Основное содержание страницы************--> --}}
     <div class="leftcol"><!--**************Основное содержание страницы************-->
         <h1>Программист</h1>
 
@@ -35,6 +41,10 @@
             <form method="POST" action="{{ url("/resume/delete/$person->id") }}">
                 @csrf
                 <input type="submit" value="Удалить"/>
+            </form>
+            <form method="GET" action="{{ url("/resume/show/$person->id") }}">
+                @csrf
+                <input type="submit" value="Посмотреть"/>
             </form>
         </div>
         @endforeach

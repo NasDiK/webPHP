@@ -42,7 +42,7 @@ class IndexController extends Controller
   }
 
   public function thirdQuery() {
-    $data = Person::all()->count();
+    $data = Person::count();
 
     return view('lab9Queries.third', [
       'count' => $data
@@ -51,8 +51,6 @@ class IndexController extends Controller
 
   public function fourthQuery() {
     $data = Staff::whereHas('Person')->get();
-
-    // dd($data);
 
     return view('lab9Queries.fourth', [
       'Staffs' => $data
