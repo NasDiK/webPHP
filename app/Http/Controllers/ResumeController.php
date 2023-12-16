@@ -64,7 +64,7 @@ class ResumeController extends Controller
     ]);
 
     $fileName = time() . '.' . $request->Image->extension();
-    $formData['Image']->storeAs('public/images', $fileName);
+    $formData['Image']->storeAs('storage/photos', $fileName);
 
     $newResume->FIO = $formData['FIO'];
     $newResume->created_at = new DateTime();
@@ -74,24 +74,24 @@ class ResumeController extends Controller
     $newResume->Image = $fileName;
     $newResume->save();
 
-    return redirect('/resume/add')->with([
-      'addResult' => "Was added with id #$newResume->id",
-      'staffs' => Staff::all()
-    ]);
+    return redirect('/');
   }
   public function updateResume(int $id, Request $request) {
     $person = Person::find($id);
 
+    $request->validate([
+      'FIO' => 'required|max:255',
+      'Phone' => 'required|numeric',
+      'Stage' => 'required|numeric',
+      'Staff' => 'required|numeric',
+      'Image' => 'required'
+    ]);
     $formData = $request->all();
 
     $person->fill($formData);
     $person->save();
 
-    return redirect("/resume/edit/$id")->with([
-      'addResult' => "Updated id #$person->id",
-      'staffs' => Staff::all(),
-      'editPerson' => $person
-    ]);
+    return redirect('/');
   }
 
   public function deleteResume(int $id, Request $request) {

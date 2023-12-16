@@ -13,7 +13,7 @@
 
 
       <div class="pinline1">
-          <img class="pic" src="{{ asset('images/' . $userData->Image)}}">
+          <img class="pic" src="{{ asset('storage/photos/' . $userData->Image) }}">
       </div>
 
       <p class="pinline second">
@@ -33,12 +33,11 @@
 
   <div class="rightcol"><!--*******************Навигационное меню*******************-->
       <ul class="menu">
-          <li><a href="">Вакансии</a></li>
-          <li><a href="">Резюме по профессиям</a></li>
-          <li><a href="">Избранное резюме</a></li>
+          <li><a href="/">Главная страница</a></li>
+          <li><a href="/resume/add">Добавить резюме</a></li>
       </ul>
   </div>
-  <div class="footer">&copy; Copyright 2017</div>
+  <div class="footer">&copy; Copyright 2023</div>
 
 </body>
 

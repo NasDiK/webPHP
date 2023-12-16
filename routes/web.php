@@ -15,7 +15,7 @@ use App\Http\Controllers\ResumeController;
 |
 */
 
-Route::get('/index', [
+Route::get('/', [
     IndexController::class, 'index'
 ])->name('index');
 
@@ -46,8 +46,6 @@ Route::post('/resume/edit/{id}', [
 Route::post('/resume/delete/{id}', [
     ResumeController::class, 'deleteResume'
 ]);
-
-//
 
 //lab 4/6
 
