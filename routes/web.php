@@ -46,3 +46,25 @@ Route::post('/resume/edit/{id}', [
 Route::post('/resume/delete/{id}', [
     ResumeController::class, 'deleteResume'
 ]);
+
+//lab 4/6
+
+Route::get('/resume/lab9/firstQuery', [
+    IndexController::class, 'firstQuery'
+]);
+
+Route::get('/resume/lab9/secondQuery', [
+    IndexController::class, 'secondQuery'
+]);
+
+Route::get('/resume/lab9/thirdQuery', [
+    IndexController::class, 'thirdQuery'
+]);
+
+Route::get('/resume/lab9/fourthQuery', [
+    IndexController::class, 'fourthQuery'
+]);
+
+Route::get('/resume/lab9/staffsList', [
+    IndexController::class, 'staffsList'
+]);
