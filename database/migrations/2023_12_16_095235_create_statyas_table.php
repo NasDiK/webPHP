@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('statyas', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
             $table->timestamps();
+            $table->string('title');
+            $table->text('content');
+            $table->string('lid')->comment('description');
+            $table->string('image');
+            $table->integer('rubrics');
 
-            $table->string('roleName')->comment('ROLE NAME (e.t.c ADMIN)');
+            $table->foreign('rubrics')->references('id')->on('rubrics');
         });
     }
 
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('statyas');
     }
 };

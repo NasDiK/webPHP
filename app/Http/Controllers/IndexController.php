@@ -3,58 +3,90 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Person;
+use App\Models\Rubric;
 use App\Models\Staff;
+use App\Models\Statya;
+use Illuminate\Support\Facades\Auth;
 
 class IndexController extends Controller
 {
   public function index()
   {
-    $header = 'Резюме и вакансии';
-    
-    return view('mainpage', [
-      'header' => $header,
-      'persons' => Person::all()
-    ]);
+      return view('index', [
+          'news' => Statya::orderBy('created_at', 'desc')->paginate(5),
+          'role' => Auth::user()->roleName ?? 'STUDENT'
+      ]);
   }
 
-  public function staffsList()
+  public function add()
   {
-    return view('lab9Queries.liststaff', [
-      'staffs' => Staff::all()
-    ]);
+      return view('add', [
+          'rubrics' => Rubric::all()
+      ]);
   }
 
-  public function firstQuery($from = 5, $to = 15) {
-    $data = Person::whereBetween('Stage', [$from, $to])->get();
-    
-    return view('lab9Queries.first', [
-      'Persons' => $data
-    ]);
+  public function rubric($id)
+  {
+      $rubric = Rubric::findOrFail($id);
+
+      return view('rubric', [
+          'rubric' => $rubric,
+          'news' => $rubric->news,
+          'role' => Auth::user()->roleName ?? 'STUDENT'
+      ]);
   }
 
-  public function secondQuery() {
-    $data = Person::join('Staff', 'Person.Staff', '=', 'Staff.id')
-      ->where('Staff.staff', 'Программист')->get();
-    
-    return view('lab9Queries.second', [
-      'Persons' => $data
-    ]);
+  public function statya($id)
+  {
+      return view('statya', [
+          'statya' => Statya::findOrFail($id)
+      ]);
   }
 
-  public function thirdQuery() {
-    $data = Person::count();
+  public function storeNews(Request $request)
+  {
+      if (Auth::user()->roleName === 'ADMIN') {
+          redirect()->route('index');
+      }
 
-    return view('lab9Queries.third', [
-      'count' => $data
-    ]);
+      $request->validate([
+          'title' => 'required|max:255',
+          'lid' => 'required',
+          'rubrics' => 'required|numeric',
+          'content' => 'required',
+          'image' => 'required'
+      ]);
+
+      if ($request->hasFile('image')) {
+          $photo = $request->file('image');
+          $path = $photo->store('photos', 'public');
+      }
+
+      $data = $request->all();
+      $data['image'] = $path;
+      $statya = new Statya();
+      $statya->fill($data);
+      $statya->save();
+
+      return redirect()->route('statya', ['id' => $statya->id]);
   }
 
-  public function fourthQuery() {
-    $data = Staff::whereHas('Person')->get();
+  public function deleteNews($id, $from)
+  {
+      $statya = Statya::findOrFail($id);
 
-    return view('lab9Queries.fourth', [
-      'Staffs' => $data
-    ]);
+      if (Auth::user()->roleName === 'ADMIN') {
+          return redirect()->route('rubric', ['id' => $statya->rubrics]);
+      }
+
+      $statya->delete();
+
+      if ($from === 'rubric') {
+          return redirect()->route('rubric', ['id' => $statya->rubrics]);
+      }
+      else {
+          return redirect()->route('index');
+      }
   }
 }
 ?>

@@ -15,56 +15,31 @@ use App\Http\Controllers\ResumeController;
 |
 */
 
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 Route::get('/', [
     IndexController::class, 'index'
-])->name('index');
+])->name('index')->middleware('auth');
 
-Route::get('/resume', [
-    IndexController::class, 'index'
-])->name('resume');
+Route::get('/add', [
+    IndexController::class, 'add'
+])->name('add')->middleware('auth');
 
-Route::get('/resume/show/{id}', [
-    ResumeController::class, 'showPersonResume'
-]);
+Route::post('/add', [
+    IndexController::class, 'storeNews'
+])->name('storeNews');
 
-Route::get('/resume/add', [
-    ResumeController::class, 'showAddPersonPage'
-])->name('resumeAdd');
 
-Route::get('/resume/edit/{id}', [
-    ResumeController::class, 'showEditPersonPage'
-]);
+Route::get('/rubric/{id}', [
+    IndexController::class, 'rubric'
+])->name('rubric')->middleware('auth');
 
-Route::post('/resume/add', [
-    ResumeController::class, 'addResume'
-]);
+Route::get('/statya/{id}', [
+    IndexController::class, 'statya'
+])->name('statya')->middleware('auth');
 
-Route::post('/resume/edit/{id}', [
-    ResumeController::class, 'updateResume'
-]);
-
-Route::post('/resume/delete/{id}', [
-    ResumeController::class, 'deleteResume'
-]);
-
-//lab 4/6
-
-Route::get('/resume/lab9/firstQuery', [
-    IndexController::class, 'firstQuery'
-]);
-
-Route::get('/resume/lab9/secondQuery', [
-    IndexController::class, 'secondQuery'
-]);
-
-Route::get('/resume/lab9/thirdQuery', [
-    IndexController::class, 'thirdQuery'
-]);
-
-Route::get('/resume/lab9/fourthQuery', [
-    IndexController::class, 'fourthQuery'
-]);
-
-Route::get('/resume/lab9/staffsList', [
-    IndexController::class, 'staffsList'
-]);
+Route::delete('/statya/{id}/{from}', [
+    IndexController::class, 'deleteNews'
+])->name('deleteNews');
