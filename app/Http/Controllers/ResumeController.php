@@ -83,13 +83,22 @@ class ResumeController extends Controller
       'FIO' => 'required|max:255',
       'Phone' => 'required|numeric',
       'Stage' => 'required|numeric',
-      'Staff' => 'required|numeric',
-      'Image' => 'required'
+      'Staff' => 'required|numeric'
     ]);
+
     $formData = $request->all();
 
-    $person->fill($formData);
-    $person->save();
+    $fileName = time() . '.' . $request->Image->extension();
+    $formData['Image']->storeAs('storage/photos', $fileName);
+
+    if($request['Image'] === null) {
+      unset($request['Image']);
+    } else {
+      $formData['Image'] = $fileName;
+    }
+
+
+    $person->update($formData);
 
     return redirect('/');
   }
