@@ -157,7 +157,6 @@ abbr { text-transform: none; }
   .print-only { display: block !important; } }
 /* Requires globals.css */
 /* Standard Forms ---------------------- */
-form { margin: 0 0 19.41641px; }
 
 .row form .row { margin: 0 -6px; }
 .row form .row .column, .row form .row .columns { padding: 0 6px; }

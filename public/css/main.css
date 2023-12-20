@@ -6,14 +6,16 @@
 
 /* CSS */
 
+@import url('../../resources/fonts/ligature.css');
+
 @font-face {
     font-family: 'LigatureSymbols';
-    src: url('LigatureSymbols-2.05.eot');
-    src: url('LigatureSymbols-2.05.eot?#iefix') format('embedded-opentype'),
-         url('LigatureSymbols-2.05.woff') format('woff'),
-         url('LigatureSymbols-2.05.ttf') format('truetype'),
-         url('LigatureSymbols-2.05.svg#LigatureSymbols') format('svg');
-    src: url('LigatureSymbols-2.05.ttf') format('truetype');
+    src: url('../../resources/fonts/LigatureSymbols/LigatureSymbols-2.07.eot');
+    src: url('../../resources/fonts/LigatureSymbols/LigatureSymbols-2.07.eot?#iefix') format('embedded-opentype'),
+         url('../../resources/fonts/LigatureSymbols/LigatureSymbols-2.07.woff') format('woff'),
+         url('../../resources/fonts/LigatureSymbols/LigatureSymbols-2.07.ttf') format('truetype'),
+         url('../../resources/fonts/LigatureSymbols/LigatureSymbols-2.07.svg#LigatureSymbols') format('svg');
+    src: url('../../resources/fonts/LigatureSymbols/LigatureSymbols-2.07.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -120,10 +122,10 @@ h1,h2,h3,h4 {font-family:'Open Sans Condensed',sans-serif; font-weight: normal; 
 
 
 .heading_supersize {font-size: 128px; text-align:center; font-weight: normal; line-height: 150px; margin:0 0 10px; color: #212121}
-.heading_largesize {font-size: 34px; text-align:; font-weight: normal}
+.heading_largesize {font-size: 34px; font-weight: normal}
 
-.dropcap_red, 
-.dropcap_black {  
+.dropcap_red,
+.dropcap_black {
             border-radius: 100px 100px 100px 100px;
             display: block;
 			float: left;
@@ -159,12 +161,12 @@ dl.tabs dd.active a {background: #fff}
 .nav-bar > li > a:first-child {font-size: 16px; text-transform: uppercase; padding: 0 25px}
 .nav-bar > li:last-child {border: 0; box-shadow: none}
 .nav-bar > li.active:hover { background: #000; cursor: default; }{}
-.nav-bar > li:hover { background: #eeeeee; color: #000;         
+.nav-bar > li:hover { background: #eeeeee; color: #000;
         -webkit-transition: all .2s ease-in-out;
         -moz-transition: all .2s ease-in-out;
         -ms-transition: all .2s ease-in-out;
         -o-transition: all .2s ease-in-out;
-        transition: all .2s ease-in-out; 
+        transition: all .2s ease-in-out;
 }
 
 .nav-bar > li > a { color: #4d4d4d}
@@ -180,21 +182,21 @@ dl.tabs dd.active a {background: #fff}
 
 ul.flyout li, .nav-bar li ul li { border-left: 0}
 ul.flyout li a, .nav-bar li ul li a { background: #FAFAFA; color:#666; border: 0; font-size: 16px;}
-ul.flyout li a:hover, .nav-bar li ul li a:hover { background: #151515; color: #fff; border: 0;         
+ul.flyout li a:hover, .nav-bar li ul li a:hover { background: #151515; color: #fff; border: 0;
         -webkit-transition: all .2s ease-in-out;
         -moz-transition: all .2s ease-in-out;
         -ms-transition: all .2s ease-in-out;
         -o-transition: all .2s ease-in-out;
-        transition: all .2s ease-in-out; 
+        transition: all .2s ease-in-out;
 		}
-		
+
 /* nav bar vertical */
 
 
 .nav-bar.vertical > li {border:0;}
 
 .nav-bar.vertical > li:last-child {border:0}
-		
+
 /* gallery menu */
 
 .gallery-nav-bar {list-style:none; text-align: center; padding-top:10px; font-family: 'Open Sans Condensed',sans-serif; letter-spacing: 2px; text-transform: uppercase}
@@ -249,7 +251,7 @@ ul.flyout li a:hover, .nav-bar li ul li a:hover { background: #151515; color: #f
 
 .rtl .box {
   float: right;
-  text-align: right; 
+  text-align: right;
   direction: rtl;
 }
 
@@ -357,7 +359,7 @@ ul.flyout li a:hover, .nav-bar li ul li a:hover { background: #151515; color: #f
 
 .mi-slider ul li:hover {
 	opacity: 0.7;
-} 
+}
 
 .mi-slider nav {
 	position: relative;
@@ -376,7 +378,7 @@ ul.flyout li a:hover, .nav-bar li ul li a:hover { background: #151515; color: #f
 	display: inline-block;
 	text-transform: uppercase;
 	letter-spacing: 5px;
-	font-family:'Open Sans Condensed',sans-serif; font-weight: normal; 
+	font-family:'Open Sans Condensed',sans-serif; font-weight: normal;
 	font-size: 16px;
 	padding: 40px 30px 30px 34px;
 	position: relative;
@@ -590,7 +592,7 @@ ul.flyout li a:hover, .nav-bar li ul li a:hover { background: #151515; color: #f
 	}
 }
 
-@media screen and (max-width: 490px){ 
+@media screen and (max-width: 490px){
 	.mi-slider {
 		text-align: center;
 		height: auto;

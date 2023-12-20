@@ -1,92 +1,201 @@
-<?
+<?php
 
 namespace App\Http\Controllers;
+
+use App\Models\Courses;
+use App\Models\CoursesMembers;
+use App\Models\LanguageGroup;
+use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\Person;
-use App\Models\Rubric;
-use App\Models\Staff;
-use App\Models\Statya;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class IndexController extends Controller
 {
-  public function index()
-  {
-      return view('index', [
-          'news' => Statya::orderBy('created_at', 'desc')->paginate(5),
-          'role' => Auth::user()->roleName ?? 'STUDENT'
-      ]);
-  }
+    public function index()
+    {
+        $courses = Courses::orderBy('created_at', 'desc')->get();
 
-  public function add()
-  {
-      return view('add', [
-          'rubrics' => Rubric::all()
-      ]);
-  }
+        $courses = $courses->map(
+            function ($course) {
+                $course['hasRecord'] = $course->members->contains('userId', Auth::user()->id);
 
-  public function rubric($id)
-  {
-      $rubric = Rubric::findOrFail($id);
+                return $course;
+            },
+            $courses
+        );
 
-      return view('rubric', [
-          'rubric' => $rubric,
-          'news' => $rubric->news,
-          'role' => Auth::user()->roleName ?? 'STUDENT'
-      ]);
-  }
+        return view('index', [
+            'courses' => $courses,
+            'role' => Auth::user()->roleName
+        ]);
+    }
 
-  public function statya($id)
-  {
-      return view('statya', [
-          'statya' => Statya::findOrFail($id)
-      ]);
-  }
+    public function course($id)
+    {
+        return view('course', [
+            'course' => Courses::findOrFail($id)
+        ]);
+    }
 
-  public function storeNews(Request $request)
-  {
-      if (Auth::user()->roleName === 'ADMIN') {
-          redirect()->route('index');
-      }
+    public function courseAdd()
+    {
+        return view('addCourse', [
+            'groups' => LanguageGroup::all()
+        ]);
+    }
 
-      $request->validate([
-          'title' => 'required|max:255',
-          'lid' => 'required',
-          'rubrics' => 'required|numeric',
-          'content' => 'required',
-          'image' => 'required'
-      ]);
+    public function storeCourse(Request $request)
+    {
+        if (Auth::user()->roleName === 'STUDENT') {
+            redirect()->route('index');
+        }
 
-      if ($request->hasFile('image')) {
-          $photo = $request->file('image');
-          $path = $photo->store('photos', 'public');
-      }
+        $request->validate([
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'startAt' => 'required',
+            'image' => 'required',
+            'limit' => 'required|numeric',
+            'languageGroupId' => 'required|numeric'
+        ]);
 
-      $data = $request->all();
-      $data['image'] = $path;
-      $statya = new Statya();
-      $statya->fill($data);
-      $statya->save();
+        if ($request->hasFile('image')) {
+            $photo = $request->file('image');
+            $path = $photo->store('photos', 'public');
+        }
 
-      return redirect()->route('statya', ['id' => $statya->id]);
-  }
+        $data = $request->all();
+        $data['image'] = $path;
+        $course = new Courses();
+        $course->fill($data);
+        $course->save();
 
-  public function deleteNews($id, $from)
-  {
-      $statya = Statya::findOrFail($id);
+        return redirect()->route('course', ['id' => $course->id]);
+    }
 
-      if (Auth::user()->roleName === 'ADMIN') {
-          return redirect()->route('rubric', ['id' => $statya->rubrics]);
-      }
+    public function deleteCourse($id)
+    {
+        $course = Courses::findOrFail($id);
 
-      $statya->delete();
+        if (Auth::user()->roleName === 'STUDENT') {
+            return redirect()->route('index');
+        }
 
-      if ($from === 'rubric') {
-          return redirect()->route('rubric', ['id' => $statya->rubrics]);
-      }
-      else {
-          return redirect()->route('index');
-      }
-  }
+        $course->delete();
+
+        return redirect()->route('index');
+    }
+
+    public function courseRegister($id)
+    {
+        $registration = new CoursesMembers([
+            'courseId' => $id,
+            'userId' => Auth::user()->id
+        ]);
+
+        $registration->save();
+
+        return redirect()->route('index');
+    }
+
+    public function profile()
+    {
+        return view('profile', [
+            'user' => Auth::user(),
+            'records' => CoursesMembers::where('userId',  Auth::user()->id)->get()
+        ]);
+    }
+
+    public function deleteRecord($id)
+    {
+        $record = CoursesMembers::findOrFail($id);
+
+        $record->delete();
+
+        return redirect()->route('profile');
+    }
+
+    public function admin()
+    {
+        return view('admin', [
+            'user' => Auth::user(),
+            'courses' => Courses::all(),
+            'records' => CoursesMembers::all()
+        ]);
+    }
+
+    public function courseRecords(Request $request)
+    {
+        $records = CoursesMembers::where('courseId',  $request->courseId)->get();
+
+        return view('members', [
+            'records' => $records
+        ])->render();
+    }
+
+    public function deleteRecordInAdminPage($id)
+    {
+        $record = CoursesMembers::findOrFail($id);
+
+        $record->delete();
+
+        return redirect()->route('admin');
+    }
+
+    public function language($id)
+    {
+        $group = LanguageGroup::findOrFail($id);
+
+        $courses = $group->courses;
+
+        $courses = $courses->map(
+            function ($course) {
+                $course['hasRecord'] = $course->members->contains('userId', Auth::user()->id);
+
+                return $course;
+            },
+            $courses
+        );
+
+        return view('language', [
+            'group' => $group,
+            'courses' => $courses,
+            'role' => Auth::user()->roleName
+        ]);
+    }
+
+    public function list(Request $request)
+    {
+        $courses = Courses::orderBy('created_at', 'desc');
+
+        if ($request->active === 'true') {
+            $courses->where('startAt', '>',  now());
+        }
+
+        if ($request->full === 'true') {
+            $courses->whereRaw('`limit` = (select count(*) from courses_members where courses.id = courses_members.courseId)');
+        }
+
+        if ($request->ended === 'true') {
+            $courses->where('startAt', '<',  now());
+        }
+
+
+        $courses = $courses->get();
+
+        $courses = $courses->map(
+            function ($course) {
+                $course['hasRecord'] = $course->members->contains('userId', Auth::user()->id);
+
+                return $course;
+            },
+            $courses
+        );
+
+        return view('list', [
+            'courses' => $courses,
+            'role' => Auth::user()->roleName
+        ]);
+    }
 }
-?>
