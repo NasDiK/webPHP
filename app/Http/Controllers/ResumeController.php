@@ -64,7 +64,7 @@ class ResumeController extends Controller
     ]);
 
     $fileName = time() . '.' . $request->Image->extension();
-    $formData['Image']->storeAs('storage/photos', $fileName);
+    $formData['Image']->storeAs('public/photos', $fileName);
 
     $newResume->FIO = $formData['FIO'];
     $newResume->created_at = new DateTime();
@@ -88,15 +88,13 @@ class ResumeController extends Controller
 
     $formData = $request->all();
 
-    $fileName = time() . '.' . $request->Image->extension();
-    $formData['Image']->storeAs('storage/photos', $fileName);
-
     if($request['Image'] === null) {
       unset($request['Image']);
     } else {
+      $fileName = time() . '.' . $request->Image->extension();
+      $formData['Image']->storeAs('public/photos', $fileName);
       $formData['Image'] = $fileName;
     }
-
 
     $person->update($formData);
 
