@@ -7,6 +7,33 @@
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
 
-//@import "main.css";
 
-@import url('../fonts/ligature.css');
+.myRow {
+    background: white;
+    max-width: 1100px;
+    padding: 0 10px;
+    margin: 0 auto;
+}
+
+.form-control {
+    border-radius: 0;
+    line-height: 0;
+}
+
+h6, .h6, h5, .h5, h4, .h4, h3, .h3, h2, .h2, h1, .h1 {
+    font-weight: bold;
+}
+
+.btn {
+    --bs-btn-border-radius: 0;
+}
+
+.form-group label {
+    font-size: 16px;
+}
+
+.form-control {
+    line-height: 16px;
+}
+
+

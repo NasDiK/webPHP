@@ -8,7 +8,6 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rules\Password;
 
 class RegisterController extends Controller
 {
@@ -52,10 +51,10 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255', 'regex:/[А-Яа-я]+$/u'],
-            'email' => ['required', 'string', 'email', 'max:255'],
-            'password' => ['required', 'string', 'confirmed', 'regex:/^[a-zA-Z]+$/i', Password::min(6)->mixedCase()],
-            'login' => ['required', 'string', 'min:4', 'unique:users'],
-            'image' => ['required', 'image', 'mimes:jpg']
+            'email' => ['required', 'email:rfc,dns', 'max:255', 'unique:users'],
+            'password' => ['required', 'string'],
+            'phone' => ['required', 'numeric', 'digits:11'],
+            'image' => ['required', 'image']
         ]);
     }
 
@@ -73,10 +72,10 @@ class RegisterController extends Controller
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'login' => $data['login'],
-            'roleName' => $data['roleName'],
-            'image' => $path,
             'password' => Hash::make($data['password']),
+            'phone' => $data['phone'],
+            'image' => $path,
+            'roleName' => 'VISITOR'
         ]);
     }
 }

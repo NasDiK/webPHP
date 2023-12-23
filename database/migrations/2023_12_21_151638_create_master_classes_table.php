@@ -11,15 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('courses', function (Blueprint $table) {
+        Schema::create('master_classes', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('name');
             $table->text('description');
+//            $table->date('date');
+//            $table->time('time');
             $table->timestamp('startAt');
             $table->integer('limit');
-            $table->string('image');
-            $table->unsignedBigInteger('languageGroupId');
-            $table->foreign('languageGroupId')->references('id')->on('language_groups');
+            $table->integer('cost');
+            $table->integer('creatorId');
+            $table->foreign('creatorId')->references('id')->on('users');
+            $table->integer('activityId');
+            $table->foreign('activityId')->references('id')->on('activities');
             $table->timestamps();
         });
     }
@@ -29,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('courses');
+        Schema::dropIfExists('master_classes');
     }
 };

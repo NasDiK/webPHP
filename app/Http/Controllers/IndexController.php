@@ -2,200 +2,195 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Courses;
-use App\Models\CoursesMembers;
-use App\Models\LanguageGroup;
+use App\Models\Activity;
+use App\Models\MasterClass;
+use App\Models\MasterClassRegistration;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Jenssegers\Date\Date;
 
 class IndexController extends Controller
 {
     public function index()
     {
-        $courses = Courses::orderBy('created_at', 'desc')->get();
+        return view('index', [
+            'registrations' => Auth::user()->registrations ?? []
+        ]);
+    }
 
-        $courses = $courses->map(
-            function ($course) {
-                $course['hasRecord'] = $course->members->contains('userId', Auth::user()->id);
+    public function activity(Request $request)
+    {
+        if (isset($request->id)) {
+            $activity = Activity::findOrFail($request->id);
+        } else {
+            $activity = Activity::where('name', $request->name)->first();
+        }
 
-                return $course;
+        $master_classes = $activity->master_classes;
+
+        $master_classes = $master_classes->map(
+            function ($master_class) {
+                $master_class['hasRecord'] = $master_class->registrations->contains('userId', Auth::user()->id ?? 0);
+
+                return $master_class;
             },
-            $courses
+            $master_classes
         );
 
-        return view('index', [
-            'courses' => $courses,
-            'role' => Auth::user()->roleName
+        return view('activity', [
+            'activity' => $activity,
+            'master_classes' => $master_classes
         ]);
-    }
-
-    public function course($id)
-    {
-        return view('course', [
-            'course' => Courses::findOrFail($id)
-        ]);
-    }
-
-    public function courseAdd()
-    {
-        return view('addCourse', [
-            'groups' => LanguageGroup::all()
-        ]);
-    }
-
-    public function storeCourse(Request $request)
-    {
-        if (Auth::user()->roleName === 'STUDENT') {
-            redirect()->route('index');
-        }
-
-        $request->validate([
-            'title' => 'required|max:255',
-            'description' => 'required',
-            'startAt' => 'required',
-            'image' => 'required',
-            'limit' => 'required|numeric',
-            'languageGroupId' => 'required|numeric'
-        ]);
-
-        if ($request->hasFile('image')) {
-            $photo = $request->file('image');
-            $path = $photo->store('photos', 'public');
-        }
-
-        $data = $request->all();
-        $data['image'] = $path;
-        $course = new Courses();
-        $course->fill($data);
-        $course->save();
-
-        return redirect()->route('course', ['id' => $course->id]);
-    }
-
-    public function deleteCourse($id)
-    {
-        $course = Courses::findOrFail($id);
-
-        if (Auth::user()->roleName === 'STUDENT') {
-            return redirect()->route('index');
-        }
-
-        $course->delete();
-
-        return redirect()->route('index');
-    }
-
-    public function courseRegister($id)
-    {
-        $registration = new CoursesMembers([
-            'courseId' => $id,
-            'userId' => Auth::user()->id
-        ]);
-
-        $registration->save();
-
-        return redirect()->route('index');
     }
 
     public function profile()
     {
+        if (Auth::user()->roleName === 'VISITOR') {
+            return redirect()->route('index');
+        }
+
         return view('profile', [
             'user' => Auth::user(),
-            'records' => CoursesMembers::where('userId',  Auth::user()->id)->get()
+            'master_classes' => Auth::user()->creator_master_classes
         ]);
     }
 
-    public function deleteRecord($id)
+    public function addMasterClass()
     {
-        $record = CoursesMembers::findOrFail($id);
+        if (Auth::user()->roleName === 'VISITOR') {
+            return redirect()->route('index');
+        }
 
-        $record->delete();
+        return view('addMasterClass', [
+            'activity' => Activity::all()
+        ]);
+    }
+
+    public function storeMasterClass(Request $request)
+    {
+        if (Auth::user()->roleName === 'VISITOR') {
+            return redirect()->route('index');
+        }
+
+        $request->validate([
+            'name' => 'required|max:255',
+            'description' => 'required|string',
+            'date' => 'required|date|after_or_equal:now',
+            'time' => 'required|date_format:H:i',
+            'cost' => 'required|numeric',
+            'limit' => 'required|numeric',
+            'activityId' => 'required|numeric|exists:activity,id'
+        ]);
+
+        $data = $request->all();
+        $data['startAt'] = Carbon::createFromFormat('Y-m-d H:i', $data['date'] . ' ' . $data['time'])->format('Y-m-d H:i:s');
+
+        unset($data['date']);
+        unset($data['time']);
+
+        $data['creatorId'] = Auth::user()->id;
+        $masterClass = new MasterClass($data);
+        $masterClass->save();
 
         return redirect()->route('profile');
     }
 
-    public function admin()
+    public function registration($masterClassId)
     {
-        return view('admin', [
+        if (!isset(Auth::user()->id)) {
+            return redirect()->route('index');
+        }
+
+        $masterClass = MasterClass::findOrFail($masterClassId);
+
+        if (!$masterClass->canRegister) {
+            redirect()->route('index');
+        }
+
+        return view('registration', [
+            'masterClass' => $masterClass,
             'user' => Auth::user(),
-            'courses' => Courses::all(),
-            'records' => CoursesMembers::all()
+            'time' => Date::parse($masterClass->startAt)->format('H:i'),
+            'date' => Date::parse($masterClass->startAt)->format('j F')
         ]);
     }
 
-    public function courseRecords(Request $request)
+    public function courseRegister($masterClassId)
     {
-        $records = CoursesMembers::where('courseId',  $request->courseId)->get();
+        if (!isset(Auth::user()->id)) {
+            return redirect()->route('index');
+        }
 
-        return view('members', [
-            'records' => $records
-        ])->render();
+        $masterClass = MasterClass::findOrFail($masterClassId);
+
+        if (!$masterClass->canRegister || Auth::user()->id === $masterClass->creatorId) {
+            redirect()->route('index');
+        }
+
+        $registration = new MasterClassRegistration([
+            'userId' => Auth::user()->id,
+            'masterClassId' => $masterClassId
+        ]);
+
+        $registration->save();
+
+        return redirect()->route('activity', ['id' => $masterClass->activityId])->with('status', 'Вы успешно записаны на курс');
     }
 
-    public function deleteRecordInAdminPage($id)
+    public function masterClass($id)
     {
-        $record = CoursesMembers::findOrFail($id);
+        if (Auth::user()->roleName === 'VISITOR') {
+            return redirect()->route('index');
+        }
 
-        $record->delete();
+        $masterClass = MasterClass::findOrFail($id);
 
-        return redirect()->route('admin');
+        return view('masterClass', [
+            'masterClass' => $masterClass,
+            'time' => Date::parse($masterClass->startAt)->format('H:i'),
+            'date' => Date::parse($masterClass->startAt)->format('Y-m-d')
+        ]);
     }
 
-    public function language($id)
+    public function updateMasterClass(Request $request, $id)
     {
-        $group = LanguageGroup::findOrFail($id);
+        if (Auth::user()->roleName === 'VISITOR') {
+            return redirect()->route('index');
+        }
 
-        $courses = $group->courses;
+        $request->validate([
+            'description' => 'required|string',
+            'cost' => 'required|numeric',
+        ]);
 
-        $courses = $courses->map(
-            function ($course) {
-                $course['hasRecord'] = $course->members->contains('userId', Auth::user()->id);
+        $masterClass = MasterClass::findOrFail($id);
 
-                return $course;
+        $masterClass['cost'] = $request['cost'];
+        $masterClass['description'] = $request['description'];
+
+        $masterClass->save();
+
+        return redirect()->route('profile');
+    }
+
+    public function getEmptyTimeByDate(Request $request)
+    {
+        if (Auth::user()->roleName === 'VISITOR') {
+            return redirect()->route('index');
+        }
+
+        $masterClasses = MasterClass::whereDate('startAt', $request['date'])->get();
+
+        $times = $masterClasses->map(
+            function ($masterClass) {
+                return Date::parse($masterClass->startAt)->format('H:i');
             },
-            $courses
+            $masterClasses
         );
 
-        return view('language', [
-            'group' => $group,
-            'courses' => $courses,
-            'role' => Auth::user()->roleName
-        ]);
-    }
-
-    public function list(Request $request)
-    {
-        $courses = Courses::orderBy('created_at', 'desc');
-
-        if ($request->active === 'true') {
-            $courses->where('startAt', '>',  now());
-        }
-
-        if ($request->full === 'true') {
-            $courses->whereRaw('`limit` = (select count(*) from courses_members where courses.id = courses_members.courseId)');
-        }
-
-        if ($request->ended === 'true') {
-            $courses->where('startAt', '<',  now());
-        }
-
-
-        $courses = $courses->get();
-
-        $courses = $courses->map(
-            function ($course) {
-                $course['hasRecord'] = $course->members->contains('userId', Auth::user()->id);
-
-                return $course;
-            },
-            $courses
-        );
-
-        return view('list', [
-            'courses' => $courses,
-            'role' => Auth::user()->roleName
-        ]);
+        return $times;
     }
 }

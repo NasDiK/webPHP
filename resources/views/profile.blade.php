@@ -1,64 +1,53 @@
 @extends('layouts.main')
 
-@section('header')
-    <div class="row">
-        {{--        <a href="{{ route('rubric', ['id' => $statya->rubric->id]) }}"><h4>{{ $statya->rubric->name }}</h4></a>--}}
-        <article>
-            <div class="twelve columns">
-                <h1>Мой профиль</h1>
-                <p class="excerpt">
-                    <img src="../storage/{{ $user->image }}" alt="desc" width=200 align=left hspace=30>
-                    {{ $user->name }}
-                </p>
-            </div>
-        </article>
-    </div>
-@endsection
-
-@section('sidebar')
-    @parent
-
-@endsection
-
 @section('content')
-
-    <section class="section_light">
-        <div class="row">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Название курса</th>
-                    <th scope="col">Дата первого занятия</th>
-                    <th scope="col"></th>
-                </tr>
-                </thead>
-                <tbody>
-                    @foreach ($records as $record)
+    <div class="hover"></div>
+    <div class="title"></div>
+    <div class="row--small grid between">
+        <div class="content driver-page">
+            <div class="driver-page-photo">
+                <img height="200px;" width="200px;" src="../storage/{{ $user->image }}">
+            </div>
+            <div class="driver-page-name">{{ $user->name }}</div>
+            <div class="driver-page-text">
+                <div class="driver-page-my">Мои мастер-классы</div>
+                <table class="driver-page-table">
+                    <tbody>
+                    @foreach ($master_classes as $masterClass)
                         <tr>
-                            <td>{{ $loop->index+1 }}</td>
-                            <td>{{ $record->course['title'] }}</td>
-                            <td>{{ date('d.m.Y, H:i', strtotime($record->course['startAt'])) }}</td>
+                            <td>{{ $masterClass->startAtLocale }}</td>
                             <td>
-                                @if($record->canDeleteRecord)
-                                    <form id="delete-form" action="{{ route('deleteRecord', ['id' => $record->id]) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit">Удалить запись</button>
-                                    </form>
-                                @elseif($record->isStarted)
-                                    Курс уже начался
-                                @else
-                                    До начала курса менее одних суток
-                                @endif
+                                <b>
+                                    <a style="text-decoration: none;"
+                                      href="{{ route('masterClass', ['id' => $masterClass->id])  }}">
+                                        {{ $masterClass->name }}
+                                    </a>
+                                </b>
+                                @foreach ($masterClass->registrations as $registration)
+                                    <p>
+                                        {{ $loop->index + 1 }}. {{ $registration->user['name'] }} <br>
+                                        email: {{ $registration->user['email'] }} <br>
+                                        tel: {{ $registration->user['phone'] }}
+                                    </p>
+                                @endforeach
                             </td>
                         </tr>
                     @endforeach
-                </tbody>
-            </table>
+                </table>
+            </div>
+            <div class="driver-page-btn-wrapper">
+                <a style="text-decoration: none;" href="{{ route('addMasterClass') }}">
+                    <div class="driver-page-btn btn">
+                       Добавить мастер-класс
+                    </div>
+                </a>
+            </div>
         </div>
-    </section>
-
+        <ul class="menu" style="height: 300px;">
+            <li><a href="{{ route('activity', ['name' => 'Архитектурное моделирование']) }}">
+                    Архитектурное моделирование</a></li>
+            <li><a href="{{ route('activity', ['name' => 'Кулинария']) }}">Кулинария</a></li>
+            <li><a href="{{ route('activity', ['name' => 'Резьба по дереву']) }}">Резьба по дереву</a></li>
+        </ul>
+    </div>
 @endsection
-
-

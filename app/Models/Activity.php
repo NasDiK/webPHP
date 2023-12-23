@@ -6,15 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class LanguageGroup extends Model
+class Activity extends Model
 {
     use HasFactory;
 
-    protected $table = 'language_groups';
+    protected $table = 'activities';
     protected $guarded = ['id'];
 
-    public function courses():HasMany
+    public function master_classes():HasMany
     {
-        return $this->hasMany(Courses::class, 'languageGroupId', 'id');
+        return $this->hasMany(MasterClass::class, 'activityId', 'id');
     }
 }

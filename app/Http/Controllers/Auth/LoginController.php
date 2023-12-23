@@ -39,22 +39,12 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    public function username()
-    {
-        return 'login';
-    }
-
-    protected function redirectTo()
-    {
-        return route('profile');
-    }
-
     protected function authenticated()
     {
-        if (Auth::user()->roleName === 'ADMIN') {
-            return redirect()->route('admin');
+        if (Auth::user()->roleName === 'MASTER') {
+            return redirect()->route('profile');
         }
 
-        return redirect()->route('profile');
+        return redirect()->route('index');
     }
 }

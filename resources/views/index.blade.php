@@ -1,110 +1,84 @@
 @extends('layouts.main')
 
-@section('header')
-    <h1>Языковая школа LINGVO</h1>
-
-    <div style="display: flex; gap: 30px;">
-        <label style="font-size: 16px; display: flex; align-items: center; gap: 10px;">
-            Активный курс
-            <input type="checkbox" value="active" class="active-input">
-        </label>
-        <label style="font-size: 16px; display: flex; align-items: center; gap: 10px;">
-            Завершенный курс
-            <input type="checkbox" value="ended" class="ended-input">
-        </label>
-        <label style="font-size: 16px; display: flex; align-items: center; gap: 10px;">
-            Мест нет
-            <input type="checkbox" value="full" class="full-input">
-        </label>
-    </div>
-@endsection
-
-@section('sidebar')
-    @parent
-@endsection
-
 @section('content')
-    <section>
-        <div class="row">
-            <section class="eight columns" style="min-height: 400px;">
-                @foreach ($courses as $course)
-                    <article class="blog_post">
+    <div class="hover"></div>
+    <div class="title">«ОчУмелые ручки»</div>
+    <div class="myRow grid between" style="padding: 0 52px;">
 
-                        <div class="three columns">
-                            <a href="{{ route('course', ['id' => $course->id]) }}" class="th"><img src="storage/{{ $course->image }}" alt="desc" /></a>
-                        </div>
-                        <div class="nine columns">
-                            <a href="{{ route('course', ['id' => $course->id]) }}"><h4>{{ $course->title }}</h4></a>
-                            <p> {{ $course->description }}</p>
+        {{-- TODO  --}}
+        <div class="content">
+            <img width="200" height="150" style="margin-right: 10px;" src="img/sidorovich-shablon.jpg">
 
-                            <div style="display: flex; gap: 15px;">
-                                @if($role && !$course->hasMembers)
-                                    <form id="delete-form" action="{{ route('deleteCourse', ['id' => $course->id]) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit">Удалить</button>
-                                    </form>
-                                @endif
+            <p>Короче, Меченый!</p>
 
-                                @if($course->hasEmptySpace && !$course->hasRecord && $course->notStarted)
-                                    <form id="delete-form" action="{{ route('courseRegister', ['id' => $course->id]) }}" method="POST">
-                                        @csrf
-                                        <button type="submit">Записаться на курс</button>
-                                    </form>
-                                @endif
+            <p>
+                я тебя спас и в благородство играть не буду: выполнишь для меня пару заданий — и мы в расчете.
+            </p>
+
+            <p>Заодно посмотрим, как быстро у тебя башка после амнезии прояснится. А по твоей теме постараюсь разузнать. Хрен его знает, на кой ляд тебе этот Стрелок сдался, но я в чужие дела не лезу, хочешь убить, значит есть за что...</p>
+
+            <p>
+                <span>Наши курсы</span>
+            </p>
+
+            <p>1. Архитектурное моделирование:
+            Обучение не только архитектуре, но и моделированию.</p>
+
+            <p>2. Кулинария:
+            Яичница на завтрак - это конечно хорошо, но вы пробовали поужинать жульеном?</p>
+
+            <p> 3. Резьба по дереву:
+            Создайте фигурки избранных персонажей любимой игры</p>
+
+            <p>
+                <span>Присоединяйтесь к нам</span>
+            </p>
+
+            <p>Присоединяйтесь к нашему сообществу творческих людей и начните свой удивительный путь в мире мастерства и искусства.
+                Развивайтесь, творите и вдохновляйтесь вместе с нами!</p>
+
+        </div>
+        <ul class="menu" style="height: min-content;">
+            <li><a href="{{ route('activity', ['name' => 'Архитектурное моделирование']) }}">Архитектурное моделирование</a></li>
+            <li><a href="{{ route('activity', ['name' => 'Кулинария']) }}">Кулинария</a></li>
+            <li><a href="{{ route('activity', ['name' => 'Резьба по дереву']) }}">Резьба по дереву</a></li>
+            @if(isset(Auth::user()->roleName) && Auth::user()->roleName === 'MASTER' ?? false)
+                <b><li><a href="{{ route('profile') }}">Профиль</a></li></b>
+            @endif
+        </ul>
+    </div>
+
+    @auth
+    <div class="row shedule">
+        <div class="row--small">
+            <h2>Моё расписание</h2>
+            <div class="drivers">
+                @if(count($registrations ?? []) > 0)
+                    @foreach ($registrations as $registration)
+                        <div class="driver grid" style="gap: 20px;">
+                            <div class="driver-right" style="display: flex; align-items: center;">
+                                @guest
+                                @else
+                                    @if($registration->masterClass->hasRecord)
+                                        <h1 class="driver-time" style="font-size: 16px;">
+                                            Вы записаны
+                                        </h1>
+                                    @endif
+                                @endguest
+                                <div style="width: 150px;" class="driver-time">{{ $registration->masterClass->startAtLocale }}</div>
+                            </div>
+                            <div class="driver-left grid">
+                                <div class="driver-text" style="min-width: 625px;">
+                                    <div class="driver-name">{{ $registration->masterClass->name }}</div>
+                                    <div class="driver-desc"> {{ $registration->masterClass->description }}</div>
+                                </div>
                             </div>
                         </div>
-                    </article>
-                @endforeach
-            </section>
-
-            @if($role === 'ADMIN')
-                <section class="four columns">
-                    <H3>  &nbsp; </H3>
-                    <div class="panel">
-                        <h3>Админ-панель</h3>
-                        <ul class="accordion">
-                            <li class="active">
-                                <div class="title">
-                                    <a href="{{ route('courseAdd') }}"><h5>Добавить курс</h5></a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </section>
-            @endif
+                    @endforeach
+                @else
+                    <p>Вы не записаны ни на один курс</p>
+                @endif
+            </div>
         </div>
-    </section>
+    @endauth
 @endsection
-
-@section('js')
-    <script>
-        $(document).ready( function () {
-            $('.active-input, .ended-input, .full-input').change(function () {
-                const active = $('.active-input').is(':checked');
-                const ended = $('.ended-input').is(':checked');
-                const full = $('.full-input').is(':checked');
-
-                console.log({active, ended, full})
-
-                $.ajax({
-                    url: "{{ route('list') }}",
-                    type: 'GET',
-                    data: {
-                        active: active,
-                        ended: ended,
-                        full: full
-                    },
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: (response) => {
-                        $('.eight').html(response);
-                    }
-                })
-            })
-        })
-    </script>
-@endsection
-
-
